@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 KEYWORDS = ['дизайн', 'фото', 'web', 'python']
 
-url = 'https://habr.com/ru/articles/'
+url = 'https://habr.com/ru/all/'
 response = requests.get(url)
 response.raise_for_status()
 
@@ -21,11 +21,19 @@ for article in articles:
     date_elem = article.find('span', class_='tm-article-snippet__datetime-published')
     date = date_elem.get_text(strip=True) if date_elem else ''
     
-    article_html = str(article)
+    title_text = title_elem.get_text(strip=True) if title_elem else ''
+    
+    description_elem = article.find('div', class_='tm-article-body') or article.find('div', class_='tm-article-snippet__article-teaser')
+    description_text = description_elem.get_text(strip=True) if description_elem else ''
+    
+    datetime_elem = article.find('span', class_='tm-article-snippet__datetime-published')
+    datetime_text = datetime_elem.get_text(strip=True) if datetime_elem else ''
+    
+    article_text = f"{title_text} {description_text} {datetime_text}".lower()
     
     found = False
     for word in KEYWORDS:
-        if word.lower() in article_html.lower():
+        if word.lower() in article_text:
             found = True
             break
     
